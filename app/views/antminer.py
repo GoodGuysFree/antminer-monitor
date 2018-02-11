@@ -128,6 +128,15 @@ def miners():
                 error_message = "[ERROR] Could not retrieve temperatures from miner '{}'.".format(miner.ip)
                 logger.warning(error_message)
                 flash(error_message, "error")
+                errors = True
+                miner_errors.update({miner.ip: error_message})
+            if max(fan_speeds) > 3300:
+                error_message = "[WARNING] High fan speeds on miner '{}'.".format(miner.ip)
+                logger.warning(error_message)
+                #flash(error_message, "warning")
+                flash(error_message, "error")
+                errors = True
+                miner_errors.update({miner.ip: error_message})
 
     # Flash success/info message
     if not miners:
