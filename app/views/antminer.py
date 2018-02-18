@@ -17,6 +17,8 @@ import re
 from datetime import timedelta
 import time
 
+FAN_SPEED_WARNING = -1
+CHIP_TEMP_WARNING = 82
 
 @app.route('/')
 def miners():
@@ -119,18 +121,18 @@ def miners():
                 errors = True
                 miner_errors.update({miner.ip: error_message})
             if temps:
-                if max(temps) >= 80:
+                if max(temps) >= CHIP_TEMP_WARNING:
                     error_message = "[WARNING] High temperatures on miner '{}'.".format(miner.ip)
                     logger.warning(error_message)
                     flash(error_message, "warning")
+                    logger.warning(error_message)
+                    flash(error_message, "error")
+                    errors = True
+                    miner_errors.update({miner.ip: error_message})
             if not temps:
                 temperatures.update({miner.ip: 0})
                 error_message = "[ERROR] Could not retrieve temperatures from miner '{}'.".format(miner.ip)
-                logger.warning(error_message)
-                flash(error_message, "error")
-                errors = True
-                miner_errors.update({miner.ip: error_message})
-            if max(fan_speeds) > 3300:
+            if FAN_SPEED_WARNING > 0 and max(fan_speeds) > FAN_SPEED_WARNING:
                 error_message = "[WARNING] High fan speeds on miner '{}'.".format(miner.ip)
                 logger.warning(error_message)
                 #flash(error_message, "warning")
